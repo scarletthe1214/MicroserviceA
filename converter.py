@@ -81,20 +81,24 @@ def process_input_line(line):
     return result
 
 def main():
-    while True:
-        # Open input.txt to read conversion requests
-        with open('input.txt', 'r') as input_file, open('output.txt', 'a') as output_file:
-            lines = input_file.readlines()
-            
-            if lines:  # If there are lines in the input file
-                for line in lines:
-                    if line.strip():  # Ignore empty lines
-                        result = process_input_line(line)
-                        output_file.write(f'{result}\n')
+    # Open input.txt to read conversion requests and output.txt to write results
+    with open('input.txt', 'r') as input_file, open('output.txt', 'a') as output_file:
+        # Move the file pointer to the end of the file to avoid reading old lines
+        input_file.seek(0, 2)
 
-        # Sleep for a few seconds before checking for new requests in input.txt
-        print("Waiting for new requests...")
-        time.sleep(5)  # Delay for 5 seconds before checking for new input
+        while True:
+            # Read the next line (if any)
+            line = input_file.readline()
+
+            if line:  # If there's new data in the file
+                result = process_input_line(line)
+                output_file.write(f'{result}\n')
+                output_file.flush()  # Ensure it's written to the file immediately
+
+            else:
+                # If no new data, wait a bit and try again
+                print("Waiting for new requests...")
+                time.sleep(1)  # Delay for 1 second before checking for new input
 
 if __name__ == '__main__':
     main()
